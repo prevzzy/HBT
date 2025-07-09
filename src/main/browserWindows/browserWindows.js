@@ -1,8 +1,7 @@
 
 import url from 'url';
-import electron, { BrowserWindow } from 'electron';
+import electron, { BrowserWindow, app } from 'electron';
 import { mainWindowConfig } from './windowsConfig';
-import { isAppQuitting } from '../appService/appService';
 import { pipeLogsToRenderer } from '../utils/helpers';
 
 let mainWindow
@@ -69,11 +68,8 @@ export function showMainWindow() {
 function setupWindowEventHandlers() {
   pipeLogsToRenderer(mainWindow)
 
-  mainWindow.on('close', (event) => {
-    if (!isAppQuitting()) {
-      event.preventDefault();
-      mainWindow.hide();
-    }
+  mainWindow.on('close', () => {
+    app.exit();
   })
 
   mainWindow.on('ready-to-show', () => {

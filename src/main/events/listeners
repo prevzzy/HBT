@@ -30,7 +30,7 @@ export function initIpcEvents() {
   })
 
   ipcMain.on('request-app-exit', (event, arg) => {
-    app.quit();
+    app.exit();
   })
 
 }

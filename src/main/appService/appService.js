@@ -3,8 +3,6 @@ import { createAppWindows, APP_WINDOW_NAMES, getAppWindow, getAllAppWindowsArray
 import { initIpcEvents } from '../events/listeners'
 import { initSettings } from '../settings/settings';
 
-let isQuitting = false
-
 export function setupApp() {
   // Handle creating/removing shortcuts on Windows when installing/uninstalling.
   if (require('electron-squirrel-startup')) {
@@ -37,18 +35,14 @@ function onSecondInstance() {
 
 async function start() {
   // Create window browsers, load the rest of the app, etc...
-  createAppWindows()
   await initSettings()
   initIpcEvents()
+  createAppWindows()
 }
 
 function setupAppEventListeners() {
   app.on('browser-window-created', (_, window) => {
     require("@electron/remote/main").enable(window.webContents)
-  })
-
-  app.on('before-quit', () => {
-    setIsQuitting(true);
   })
 
   app.on('will-quit', () => {
@@ -58,7 +52,7 @@ function setupAppEventListeners() {
 
   app.on('window-all-closed', () => {
     if (process.platform !== 'darwin') {
-      app.quit()
+      app.exit()
     }
   })
 
@@ -70,12 +64,4 @@ function setupAppEventListeners() {
       createAppWindows();
     }
   });
-}
-
-export function setIsQuitting(value) {
-  isQuitting = value
-}
-
-export function isAppQuitting() {
-  return isQuitting
 }
