@@ -1,0 +1,36 @@
+import { app, ipcMain } from 'electron'
+import {
+  onCleanupAllShortcutsRequest,
+  onRegisterAllShortcutsRequest,
+  onGetSettingRequest,
+  onSetSettingRequest
+} from './ipcEventHandlers'
+import { APP_WINDOW_NAMES, getAppWindow } from '../browserWindows/browserWindows'
+
+export function initIpcEvents() {
+  ipcMain.on('get-setting-request', async (event, arg) => {
+    await onGetSettingRequest(event, arg)
+  })
+
+  ipcMain.on('set-setting-request', async (event, arg) => {
+    onSetSettingRequest(event, arg)
+  })
+
+  ipcMain.on('cleanup-all-shortcuts', () => {
+    onCleanupAllShortcutsRequest()
+  });
+
+  ipcMain.on('register-all-shortcuts', () => {
+    onRegisterAllShortcutsRequest()
+  });
+
+  ipcMain.on('request-app-minimize', () => {
+    const mainWindow = getAppWindow(APP_WINDOW_NAMES.MAIN)
+    mainWindow.minimize()
+  })
+
+  ipcMain.on('request-app-exit', (event, arg) => {
+    app.quit();
+  })
+
+}
